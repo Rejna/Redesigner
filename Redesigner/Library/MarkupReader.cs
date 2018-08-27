@@ -710,7 +710,7 @@ namespace Redesigner.Library
 		{
 			Tag tag = new Tag(match, true);
 
-			if (string.IsNullOrEmpty(tag.TagName) || tag.TagName == "page" || tag.TagName == "control")
+			if (string.IsNullOrEmpty(tag.TagName) || tag.TagName == "page" || tag.TagName == "control" || tag.TagName == "master")
 			{
 				Verbose("Found main directive: <%@ {0} %>", tag);
 				ProcessMainDirective(tag);
@@ -749,27 +749,46 @@ namespace Redesigner.Library
 			if (string.IsNullOrEmpty(tag.TagName))
 			{
 				// The main directive's type has been unfortunately omitted.  This is legal, but really not a very good practice.
-				Warning("Main <%@ ... %> directive is missing the keyword \"{1}\".",  _filename.ToLower().EndsWith(".ascx") ? "Control" : "Page");
+				Warning("Main <%@ ... %> directive is missing the keyword \"{1}\".",  _filename.ToLower().EndsWith(".ascx") ? "Control" : (_filename.ToLower().EndsWith(".master") ? "Master" : "Page"));
 			}
 			else if (tag.TagName == "page")
 			{
-				if (!_filename.ToLower().EndsWith(".aspx"))
+				if (_filename.ToLower().EndsWith(".ascx"))
 				{
 					Error("Main <%@ ... %> directive has the wrong keyword \"Control\".");
+				}
+				if (_filename.ToLower().EndsWith(".master"))
+				{
+					Error("Main <%@ ... %> directive has the wrong keyword \"Master\".");
 				}
 			}
 			else if (tag.TagName == "control")
 			{
-				if (!_filename.ToLower().EndsWith(".ascx"))
+				if (_filename.ToLower().EndsWith(".aspx"))
 				{
 					Error("Main <%@ ... %> directive has the wrong keyword \"Page\".");
+				}
+				if (_filename.ToLower().EndsWith(".master"))
+				{
+					Error("Main <%@ ... %> directive has the wrong keyword \"Master\".");
+				}
+			}
+			else if (tag.TagName == "master")
+			{
+				if (_filename.ToLower().EndsWith(".aspx"))
+				{
+					Error("Main <%@ ... %> directive has the wrong keyword \"Page\".");
+				}
+				if (_filename.ToLower().EndsWith(".ascx"))
+				{
+					Error("Main <%@ ... %> directive has the wrong keyword \"Control\".");
 				}
 			}
 
 			// There can be only one main directive per file.
 			if (_mainDirective != null)
 			{
-				Error("This file has more than one main <%@ Page ... %> or <%@ Control ... %> directive.");
+				Error("This file has more than one main <%@ Page ... %>, <%@ Control ... %> or <%@ Master ... %> directive.");
 			}
 
 			// It should have an inherits="" attribute that tells us the classname of the code-behind.
@@ -797,6 +816,10 @@ namespace Redesigner.Library
 				else if (tag.TagName == "control" && !typeof(System.Web.UI.UserControl).IsAssignableFrom(mainDirectiveType))
 				{
 					Warning("Main <%@ ... %> directive says this markup inherits \"{0}\", but the class in the compiled website DLL does not inherit from System.Web.UI.UserControl!", inherits);
+				}
+				else if (tag.TagName == "master" && !typeof(System.Web.UI.MasterPage).IsAssignableFrom(mainDirectiveType))
+				{
+					Warning("Main <%@ ... %> directive says this markup inherits \"{0}\", but the class in the compiled website DLL does not inherit from System.Web.UI.MasterPage!", inherits);
 				}
 			}
 
@@ -925,7 +948,7 @@ namespace Redesigner.Library
 			Tag tag = new Tag(match);
 			string runat = tag["runat"];
 			bool isServerTag = !string.IsNullOrEmpty(runat);
-			if (isServerTag && runat != "server")
+			if (isServerTag && runat.ToLower() != "server")
 			{
 				Warning("Found runat= that is not set to \"server\".");
 			}
@@ -982,7 +1005,12 @@ namespace Redesigner.Library
 				Verbose("Adding {0} to the list of declared controls.", outputControl);
 				_outputControls.Add(outputControl);
 			}
-
+			
+			if(tag.TagName.ToLower().Contains("ajaxcontroltoolkit"))
+			{
+				return;
+			}
+			
 			// If this is a self-closing tag, we're done; otherwise, parse and process anything inside this.
 			if (!tag.IsEmpty)
 			{

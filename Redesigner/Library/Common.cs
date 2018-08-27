@@ -634,7 +634,8 @@ namespace Redesigner.Library
 
 			List<string> matchingFiles = foundFiles
 				.Where(name => name.EndsWith(".aspx", StringComparison.OrdinalIgnoreCase)
-				               || name.EndsWith(".ascx", StringComparison.OrdinalIgnoreCase))
+				               || name.EndsWith(".ascx", StringComparison.OrdinalIgnoreCase)
+				               || name.EndsWith(".master", StringComparison.OrdinalIgnoreCase))
 				.ToList();
 
 			return matchingFiles;

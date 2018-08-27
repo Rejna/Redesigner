@@ -100,7 +100,7 @@ namespace Redesigner.Library
 			Kind = TagRegistrationKind.HtmlControl,
 			AssemblyFilename = Common.SystemWebAssemblyName20,
 			Namespace = "System.Web.UI.HtmlControls",
-			TagPrefix = string.Empty,
+			TagPrefix = string.Empty
 		};
 
 		#endregion
