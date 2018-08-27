@@ -145,7 +145,7 @@ namespace Redesigner.Library
 		}
 
 		/// <summary>
-		/// For the given set of .aspx or .ascx files, generate all of their designer files.
+		/// For the given set of .aspx, .ascx or .master files, generate all of their designer files.
 		/// </summary>
 		/// <param name="compileContext">The context in which errors are to be reported.</param>
 		/// <param name="filenames">The filenames to generate.</param>
@@ -223,7 +223,7 @@ namespace Redesigner.Library
 			string designer;
 			string designerFilename = filename + ".designer.cs";
 
-			// Load the markup from the .aspx or .ascx file.
+			// Load the markup from the .aspx, .ascx or .master file.
 			MarkupReader markup = new MarkupReader();
 			MarkupInfo markupInfo;
 			try
@@ -273,7 +273,7 @@ namespace Redesigner.Library
 		}
 
 		/// <summary>
-		/// For the given set of .aspx or .ascx files, analyze all of their designer files to determine whether
+		/// For the given set of .aspx, .ascx or .master files, analyze all of their designer files to determine whether
 		/// they are valid.  (Valid means that they have all of the required property declarations, in the right
 		/// order, with the whitespace and surrounding declarations such that Visual Studio would be able to read them.)
 		/// </summary>
@@ -356,7 +356,7 @@ namespace Redesigner.Library
 			DesignerInfo designerInfo;
 			string designerFilename = filename + ".designer.cs";
 
-			// Load the markup from the .aspx or .ascx file.
+			// Load the markup from the .aspx, .ascx or .master file.
 			MarkupReader markup = new MarkupReader();
 			MarkupInfo markupInfo;
 			try
@@ -596,8 +596,8 @@ namespace Redesigner.Library
 		}
 
 		/// <summary>
-		/// Given a set of filenames describing either .aspx files, .ascx files, or directories containing
-		/// .aspx files and .ascx files, resolve those into a complete list of just .aspx and .ascx files,
+		/// Given a set of filenames describing either .aspx files, .ascx files, .master files or directories containing
+		/// .aspx files, .ascx files and .master files, resolve those into a complete list of just .aspx, .ascx and .master files,
 		/// recursing as necessary.
 		/// </summary>
 		/// <param name="filenames">The original filename list.</param>
@@ -624,10 +624,10 @@ namespace Redesigner.Library
 
 		/// <summary>
 		/// Given a filename known to be a directory, search through it to collect all of its constituent
-		/// .aspx and .ascx files.
+		/// .aspx, .ascx and .master files.
 		/// </summary>
 		/// <param name="directoryName">The directory name to search through.</param>
-		/// <returns>The list of matching .aspx and .ascx files, resolved relative to the directory path itself.</returns>
+		/// <returns>The list of matching .aspx, .ascx and .master files, resolved relative to the directory path itself.</returns>
 		private static IEnumerable<string> ResolveDirectoryReference(string directoryName)
 		{
 			string[] foundFiles = Directory.GetFiles(directoryName, "*.*", SearchOption.AllDirectories);
